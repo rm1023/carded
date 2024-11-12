@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { FormData } from '../../types'
 
 type SpendingStepProps = {
-  formData: {
-    spendingHabits: Record<string, { amount: number; isMonthly: boolean }>;
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 function ToggleButton({ isMonthly, onChange }: { isMonthly: boolean; onChange: () => void }) {

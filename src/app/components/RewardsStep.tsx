@@ -2,25 +2,20 @@ import React from 'react'
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
+import { FormData } from '../../types'
 
 type RewardsStepProps = {
-  formData: {
-    rewardsPreferences: {
-      redeemPreference: string;
-      earningEffort: number;
-      spendingEffort: number;
-    };
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function RewardsStep({ formData, updateFormData }: RewardsStepProps) {
-  const handleRedeemPreferenceChange = (value: string) => {
-    updateFormData('rewardsPreferences', { redeemPreference: value })
+  const handleRedeemPreferenceChange = (preference: string) => {
+    updateFormData('rewardsPreferences', { ...formData.rewardsPreferences, redeemPreference: preference })
   }
 
-  const handleEffortChange = (type: 'earning' | 'spending', value: number[]) => {
-    updateFormData('rewardsPreferences', { [`${type}Effort`]: value[0] })
+  const handleEffortChange = (type: 'earningEffort' | 'spendingEffort', value: number) => {
+    updateFormData('rewardsPreferences', { ...formData.rewardsPreferences, [type]: value })
   }
 
   return (
@@ -50,7 +45,7 @@ export default function RewardsStep({ formData, updateFormData }: RewardsStepPro
         <Label>How much effort do you want to put into earning rewards?</Label>
         <Slider
           value={[formData.rewardsPreferences.earningEffort]}
-          onValueChange={(value) => handleEffortChange('earning', value)}
+          onValueChange={([value]) => handleEffortChange('earningEffort', value)}
           max={100}
           step={50}
           className="mt-4"
@@ -65,7 +60,7 @@ export default function RewardsStep({ formData, updateFormData }: RewardsStepPro
         <Label>How much effort do you want to put into spending rewards?</Label>
         <Slider
           value={[formData.rewardsPreferences.spendingEffort]}
-          onValueChange={(value) => handleEffortChange('spending', value)}
+          onValueChange={([value]) => handleEffortChange('spendingEffort', value)}
           max={100}
           step={50}
           className="mt-4"

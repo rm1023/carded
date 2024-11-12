@@ -1,12 +1,11 @@
 import React from 'react'
 import { Label } from "@/components/ui/label"
 import MultiSelect from './MultiSelect'
+import { FormData } from '../../types'
 
 type CurrentCardsStepProps = {
-  formData: {
-    currentCards: string[];
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function CurrentCardsStep({ formData, updateFormData }: CurrentCardsStepProps) {

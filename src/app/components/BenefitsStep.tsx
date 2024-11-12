@@ -1,12 +1,11 @@
 import React from 'react'
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { FormData } from '../../types'
 
 type BenefitsStepProps = {
-  formData: {
-    desiredBenefits: string[];
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function BenefitsStep({ formData, updateFormData }: BenefitsStepProps) {

@@ -2,16 +2,11 @@ import React from 'react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FormData } from '../../types'
 
 type TravelStepProps = {
-  formData: {
-    travelInfo: {
-      roundTrips: number;
-      homeAirport: string;
-      daysAbroad: number;
-    };
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function TravelStep({ formData, updateFormData }: TravelStepProps) {

@@ -1,14 +1,10 @@
 import React from 'react'
 import MultiSelect from './MultiSelect'
+import { FormData } from '../../types'
 
 type LoyaltyStepProps = {
-  formData: {
-    loyaltyPrograms: {
-      airlines: string[];
-      hotels: string[];
-    };
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function LoyaltyStep({ formData, updateFormData }: LoyaltyStepProps) {

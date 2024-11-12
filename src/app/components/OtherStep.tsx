@@ -2,15 +2,11 @@ import React from 'react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { FormData } from '../../types'
 
 type OtherStepProps = {
-  formData: {
-    additionalInfo: {
-      creditScore: string;
-      interestedInBusinessCards: boolean;
-    };
-  };
-  updateFormData: (section: string, data: any) => void;
+  formData: FormData;
+  updateFormData: (section: keyof FormData, data: any) => void;
 };
 
 export default function OtherStep({ formData, updateFormData }: OtherStepProps) {
