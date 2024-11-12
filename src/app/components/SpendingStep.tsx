@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { FormData } from '../../types'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { FormData } from '../../types'
+import { Button } from "@/components/ui/button"
 
 type SpendingStepProps = {
   formData: FormData;
@@ -37,6 +38,8 @@ export default function SpendingStep({ formData, updateFormData }: SpendingStepP
     "Other Transportation", "Other Spending"
   ]
 
+  const [focusedField, setFocusedField] = useState<string | null>(null)
+
   useEffect(() => {
     if (Object.keys(formData.spendingHabits).length === 0) {
       const initialSpendingHabits = categories.reduce((acc, category) => ({
@@ -47,10 +50,21 @@ export default function SpendingStep({ formData, updateFormData }: SpendingStepP
     }
   }, [])
 
-  const handleAmountChange = (category: string, amount: string) => {
+  const formatNumberWithCommas = (value: number): string => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
+
+  const parseFormattedNumber = (value: string): number => {
+    return parseInt(value.replace(/,/g, ''), 10) || 0
+  }
+
+  const handleAmountChange = (category: string, value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '')
+    const amount = parseFormattedNumber(numericValue)
+    
     updateFormData('spendingHabits', {
       ...formData.spendingHabits,
-      [category]: { ...formData.spendingHabits[category], amount: parseInt(amount) || 0 }
+      [category]: { ...formData.spendingHabits[category], amount }
     })
   }
 
@@ -59,6 +73,22 @@ export default function SpendingStep({ formData, updateFormData }: SpendingStepP
       ...formData.spendingHabits,
       [category]: { ...formData.spendingHabits[category], isMonthly: !formData.spendingHabits[category].isMonthly }
     })
+  }
+
+  const handleFocus = (category: string) => {
+    setFocusedField(category)
+  }
+
+  const handleBlur = () => {
+    setFocusedField(null)
+  }
+
+  const getDisplayValue = (category: string) => {
+    const amount = formData.spendingHabits[category]?.amount || 0
+    if (focusedField === category) {
+      return amount > 0 ? formatNumberWithCommas(amount) : ''
+    }
+    return amount > 0 ? formatNumberWithCommas(amount) : '0'
   }
 
   const calculateTotalSpend = () => {
@@ -91,9 +121,10 @@ export default function SpendingStep({ formData, updateFormData }: SpendingStepP
             <Input
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
-              value={formData.spendingHabits[category]?.amount.toLocaleString('en-US') || ''}
-              onChange={(e) => handleAmountChange(category, e.target.value.replace(/,/g, ''))}
+              value={getDisplayValue(category)}
+              onChange={(e) => handleAmountChange(category, e.target.value)}
+              onFocus={() => handleFocus(category)}
+              onBlur={handleBlur}
               className="pl-7"
             />
           </div>
@@ -109,11 +140,11 @@ export default function SpendingStep({ formData, updateFormData }: SpendingStepP
         <div className="flex justify-between items-start">
           <div className="w-1/2">
             <Label className="text-lg font-semibold">Total Monthly Spend:</Label>
-            <div className="text-2xl font-bold">${calculateTotalSpend().monthly.toLocaleString('en-US', { maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold">${formatNumberWithCommas(calculateTotalSpend().monthly)}</div>
           </div>
           <div className="w-1/2 text-right">
             <Label className="text-lg font-semibold">Total Annual Spend:</Label>
-            <div className="text-2xl font-bold">${calculateTotalSpend().annual.toLocaleString('en-US', { maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold">${formatNumberWithCommas(calculateTotalSpend().annual)}</div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -10,8 +10,34 @@ type TravelStepProps = {
 };
 
 export default function TravelStep({ formData, updateFormData }: TravelStepProps) {
-  const handleInputChange = (field: string, value: string | number) => {
-    updateFormData('travelInfo', { [field]: value })
+  const [focusedField, setFocusedField] = useState<keyof FormData['travelInfo'] | null>(null)
+
+  const formatNumberWithCommas = (value: number): string => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
+
+  const parseFormattedNumber = (value: string): number => {
+    return parseInt(value.replace(/,/g, ''), 10) || 0
+  }
+
+  const handleInputChange = (field: keyof FormData['travelInfo'], value: string) => {
+    if (field === 'homeAirport') {
+      updateFormData('travelInfo', { ...formData.travelInfo, [field]: value })
+    } else {
+      const numericValue = value.replace(/[^0-9]/g, '')
+      const formattedValue = formatNumberWithCommas(parseInt(numericValue, 10) || 0)
+      updateFormData('travelInfo', { ...formData.travelInfo, [field]: parseFormattedNumber(formattedValue) })
+    }
+  }
+
+  const getDisplayValue = (field: keyof FormData['travelInfo']) => {
+    if (field === 'homeAirport') {
+      return formData.travelInfo[field]
+    }
+    if (focusedField === field) {
+      return formData.travelInfo[field] > 0 ? formatNumberWithCommas(formData.travelInfo[field] as number) : ''
+    }
+    return formData.travelInfo[field] > 0 ? formatNumberWithCommas(formData.travelInfo[field] as number) : '0'
   }
 
   return (
@@ -24,10 +50,13 @@ export default function TravelStep({ formData, updateFormData }: TravelStepProps
         <div>
           <Label htmlFor="round-trips">How many round-trip flights do you take per year?</Label>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             id="round-trips"
-            value={formData.travelInfo.roundTrips}
-            onChange={(e) => handleInputChange('roundTrips', parseInt(e.target.value) || 0)}
+            value={getDisplayValue('roundTrips')}
+            onChange={(e) => handleInputChange('roundTrips', e.target.value)}
+            onFocus={() => setFocusedField('roundTrips')}
+            onBlur={() => setFocusedField(null)}
             className="mt-2"
           />
         </div>
@@ -92,10 +121,13 @@ export default function TravelStep({ formData, updateFormData }: TravelStepProps
         <div>
           <Label htmlFor="days-abroad">How many days per year do you spend outside of the US?</Label>
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             id="days-abroad"
-            value={formData.travelInfo.daysAbroad}
-            onChange={(e) => handleInputChange('daysAbroad', parseInt(e.target.value) || 0)}
+            value={getDisplayValue('daysAbroad')}
+            onChange={(e) => handleInputChange('daysAbroad', e.target.value)}
+            onFocus={() => setFocusedField('daysAbroad')}
+            onBlur={() => setFocusedField(null)}
             className="mt-2"
           />
         </div>
